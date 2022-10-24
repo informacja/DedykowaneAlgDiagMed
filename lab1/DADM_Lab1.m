@@ -48,12 +48,12 @@ subplot(211),plot(f,20*log10(abs(P))); title("Ch-ka częstotliwościowa lowcutof
 subplot(212),plot(f,angle(P)); title("Faza")
 figure
 N=(M*2)+1;
-w = hann(N);
-% w=zeros(N,1);
+% w = hann(N);
+w=zeros(N,1);
 
-% for i = 1:1:N
-%     w(i)=(0.54-(0.46*cos((2*pi*i)/(N-1))));
-% end
+for i = 1:1:N
+    w(i)=(0.54-(0.46*cos((2*pi*i)/(N-1))));
+end
  
 wynik_low=w.*h_low;
 wynik_high=w.*h_high;

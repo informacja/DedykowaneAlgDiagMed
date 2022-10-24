@@ -1,5 +1,8 @@
+clear all, close all
 d = importdata("data/100_MLII.dat");
-% clear ps peaks_seconds
+% d = importdata("data/228_MLII.dat");
+x = d(720*55:720*56);% only for preview
+x = d;
 peaks_seconds = [];
 % ps(10) =[0];
 indexy = 20:20;
@@ -7,26 +10,37 @@ for i = indexy
 %     for j = 4:4
     M = 59;
     C = 24;
+
+Fs = 360;
 DADM_Lab1 % pierwszy podpunkt
 % x = v;
 % figure(1),plot(x)
 
-Fs = 360;
 T = 1/Fs;
 
-L= 512;
+L= length(x);
 t = (0:(L-1))*T;
+f = Fs*(0:(L/2))/L;
 
-win = hann(length(x));
+% win = hann(L);
+for i = 1:L
+    win(i)=(0.54-(0.46*cos((2*pi*i)/(N-1))));
+end
 xm = x - mean(x);
-% X = fft(xm.*win);
+X = abs(fft(xm.*win'));
+% [length(f),length(X)/2]
 
 % X = fftshift(X);
-% figure,plot(abs(X(length(X)/2:end)));
-% figure(222), plot(abs(X(L/2:end-1))); xlabel("Hz");
+figure, 
+subplot(211); plot(f, X(1:L/2+1)/L); xlabel("Hz");
+subplot(212);
+% semilogx(f, 20*log10(X(1:L/2+1)./max(X(1:L/2+1))),'b'); title("semiLog"), xlabel("Hz");
+semilogx(2:Fs/2, 20*log10(X(2:Fs/2)./max(X(2:Fs/2))),'b');
+% figure(222), plot(X(L/2:end-1)); 
 
 % powyższe przyda się na lab 2
 
+% moving average
 for i = 5:length(v)-5
     tmp = 0;
     for j = -4:5
@@ -37,7 +51,7 @@ end
 
 %progowanie
 xd = diff(g);
-figure, plot(xd); title("diff(g)");
+% figure, plot(xd); title("diff(g)");
 xdd(length(xd)) = 0;
 
 xd = xd+ max(xd)*0.2;
@@ -50,12 +64,17 @@ for i = 2:length(xd)
     end
     last = sign(i);
 end
-xddd =0;
+xddd = 0;
+anomaly = [];
 xddd(length(xddd)) = 0;
 last = sign(xdd(1));
 for i = 2:length(xdd)
     if(xdd(i)>last)
-        xddd(i) = 1;
+        if(x(i) < 0)
+            xddd(i) = 1;
+        else
+            anomaly = [anomaly; i];
+        end
     else
         xddd(i) = 0;
     end
@@ -64,15 +83,59 @@ end
 peaks_seconds = [peaks_seconds sum(xdd)];
 % ps(i) = peaks_seconds;
 t= [1:length(xdd)]/Fs;
-figure, plot(t,xdd()); xlabel("sekundy")
+% figure, plot(t,xdd()); xlabel("sekundy")
     end
     
 % min(peaks_seconds)
 sum(xddd)
+QRSdetected = find(xddd);
+
 t= [1:length(x)]/Fs;
  figure, plot(t,x); hold on;
- plot(t(find(xddd)),x(find(xddd)),'r*');
- xlabel("")
+ plot(t(QRSdetected),x(QRSdetected),'r*');
+ xlabel("sekundy"); ylabel("mVolty"); title("EKG");
+QRS
+%  figure(3); plot(t,w,'r',t,yb,'k',t,y,'g'); axis('tight');legend('time','butter','MA');% odpowiedz skokowa   
+% xlabel(sprintf('MSE(butter) = %g MSE(MA) = %g', MSEb, MSE));
+FS=Fs;
+order    =   5;
+fcutlow  =   5;
+fcuthigh =  25;
+ 
+% onliczone wsp???‚czynnki filtra
+[b1, a1] = butter(order,[fcutlow,fcuthigh]/(FS/2), 'bandpass');
+%--------------------------------------------------------------------------
+%Charakterystyka projektowanego filtra
+[h,f]=freqz(b1,a1,2048,FS);
+w = x;
+N=length(w); t=[1:N];
+%filtracja
+yb=filter(b1,a1,w); 
+M1=1; for(i=M1+1:N) y1(i)=mean(w(i-M1:i)); end,
+M=32; for(i=M+1:N)  y(i) =mean(y1(i-M:i)); end;
+y=y1-y;
+figure
+subplot(211); plot(yb); title("butter")
+subplot(212); plot(y);  title("MA")
+   
+A=abs(h); fi=atan(imag(h)./real(h));
+g1=[ones(1,M1)/M1 zeros(1,2048-M1)]; 
+g=[ones(1,M)/M zeros(1,2*2048-M)]; 
+h1=fft(g1); h1=h1(1:2048); A1=abs(h1); fi1=atan(imag(h1)./real(h1));
+h2=fft(g);  h2=h2(1:2048); A2=abs(h2); fi2=atan(imag(h2)./real(h2));
+fs=1./[1:2048]; As=A1-A2;
+figure; subplot(2,1,1); plot(f, A,'m'); hold on; plot(fs,A1,'r',fs,A2,'k',f,As,'b'); hold off;
+grid on; axis('tight'); legend("Butter",'',"Moving Average");
+subplot(2,1,2); plot(2*f, fi/pi); grid on; axis('tight')
+
+
+if (~isempty(anomaly))
+    figure, plot(t, x, t(anomaly), x(anomaly), 'k*');
+    if( length(anomaly) == 1)
+        xlim([anomaly-360  anomaly+500]);
+    end
+    title("Anomalia");
+end
 % end
 % figure,plot(indexy,peaks_seconds)
 % figure, plot(xdd) 

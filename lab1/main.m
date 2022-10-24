@@ -1,8 +1,8 @@
 clear all, close all
 d = importdata("data/100_MLII.dat");
-d = importdata("data/228_MLII.dat");
+% d = importdata("data/228_MLII.dat");
 x = d(720*55:720*56);% only for preview
-
+x = d;
 peaks_seconds = [];
 % ps(10) =[0];
 indexy = 20:20;
@@ -10,20 +10,24 @@ for i = indexy
 %     for j = 4:4
     M = 59;
     C = 24;
+
+Fs = 360;
 DADM_Lab1 % pierwszy podpunkt
 % x = v;
 % figure(1),plot(x)
 
-Fs = 360;
 T = 1/Fs;
 
 L= length(x);
 t = (0:(L-1))*T;
 f = Fs*(0:(L/2))/L;
 
-win = hann(L);
+% win = hann(L);
+for i = 1:L
+    win(i)=(0.54-(0.46*cos((2*pi*i)/(N-1))));
+end
 xm = x - mean(x);
-X = abs(fft(xm.*win));
+X = abs(fft(xm.*win'));
 % [length(f),length(X)/2]
 
 % X = fftshift(X);
