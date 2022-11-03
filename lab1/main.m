@@ -1,13 +1,9 @@
-clear all, close all
+ clear all, close all
 d = importdata("data/100_MLII.dat");
 % d = importdata("data/228_MLII.dat");
 x = d(720*55:720*56);% only for preview
 x = d;
-peaks_seconds = [];
-% ps(10) =[0];
-indexy = 20:20;
-for i = indexy
-%     for j = 4:4
+
     M = 59;
     C = 24;
 
@@ -40,7 +36,7 @@ semilogx(2:Fs/2, 20*log10(X(2:Fs/2)./max(X(2:Fs/2))),'b');
 
 % powyższe przyda się na lab 2
 
-% moving average
+% moving average to cure diff sharpnes
 for i = 5:length(v)-5
     tmp = 0;
     for j = -4:5
@@ -80,11 +76,10 @@ for i = 2:length(xdd)
     end
     last = xdd(i);
 end
-peaks_seconds = [peaks_seconds sum(xdd)];
 % ps(i) = peaks_seconds;
 t= [1:length(xdd)]/Fs;
-% figure, plot(t,xdd()); xlabel("sekundy")
-    end
+figure, plot(t,xdd()); xlabel("sekundy")
+   
     
 % min(peaks_seconds)
 sum(xddd)

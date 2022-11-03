@@ -33,6 +33,10 @@ for i = -M:1:M
    end
 end
 
+figure, freqz(h_low, 1); title("Magnituda filtra dolnoprzepustowego"); figPW;
+figure, freqz(h_high, 1); title("Magnituda filtra górnoprzepustowego"); figPW;
+% Depracated
+%{ 
 H = @(i) -(sin(2*pi*fc_cut_highpass*i)./(pi.*i));
 f = 0:Fs;
 P = H(f);
@@ -46,6 +50,8 @@ P = H(f);
 figure
 subplot(211),plot(f,20*log10(abs(P))); title("Ch-ka częstotliwościowa lowcutoff")
 subplot(212),plot(f,angle(P)); title("Faza")
+%}
+
 figure
 N=(M*2)+1;
 % w = hann(N);
