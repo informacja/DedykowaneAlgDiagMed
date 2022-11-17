@@ -7,21 +7,28 @@ signal = importdata("data/nsr001.dat"); % diff(R)
 
 % 4)
 samples = 128;
-f0 = 5;
+f0 = 0.1;
 t_k = [0, cumsum(rand(1, samples-1))]; % jest random, czyli jest niejednorodne
 
 x = sin(2*pi*f0*t_k);
 tn = linspace(0, max(t_k), samples);
 fs = max(t_k)/samples;
 
-%plot(x,y);
+figure(1),plot(x);
 % y = sin(2*pi*fs*t_k)
 
 % zaimplementowano metodę Lomb-Scargle
 x1 = interp1(t_k,x,tn);
-% figure(2), plot(x1);
+ figure(2), plot(x1);
 % 5)
-figure(5), periodogram(x1);
+figure(5), f1 = periodogram(x1);
+
+ULF = sum(power1(f1<=.003)) 
+VLF = sum(power1(f1<=.04))-ULF 
+LF  = sum(power1(f1<=.15))-ULF-VLF 
+HF  = sum(power1(f1<=.4))-ULF-VLF-LF 
+TP  = sum(power1(f1<=.4)) 
+LFHF = LF/HF
 
 % periodogram(x1,rectwin(length(x1)),length(x1),fs)
 % plot(w,10*log10(pxx))

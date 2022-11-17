@@ -28,7 +28,7 @@ end
 for i = -M:1:M
    if i==0
        h_high(i+M+1)=1-(2*fc_cut_highpass);
-   else 
+   else
        h_high(i+M+1)=-(sin(2*pi*fc_cut_highpass*i)./(pi.*i));
    end
 end
