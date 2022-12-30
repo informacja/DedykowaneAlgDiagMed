@@ -1,7 +1,10 @@
  clear all, close all
 d = importdata("data/100_MLII.dat");
+d = importdata("data/FilteredSignal.txt");
+d = importdata("data/100.dat");
 % d = importdata("data/228_MLII.dat");
-x = d(720*55:720*56);% only for preview
+% x = d(720*55:720*56);% only for preview
+% x = d(1:1024);% only for preview
 x = d;
 
     M = 59;
@@ -27,11 +30,11 @@ X = abs(fft(xm.*win'));
 % [length(f),length(X)/2]
 
 % X = fftshift(X);
-figure, 
-subplot(211); plot(f, X(1:L/2+1)/L); xlabel("Hz");
-subplot(212);
+% figure, 
+% subplot(211); plot(f, X(1:L/2+1)/L); xlabel("Hz");
+% subplot(212);
 % semilogx(f, 20*log10(X(1:L/2+1)./max(X(1:L/2+1))),'b'); title("semiLog"), xlabel("Hz");
-semilogx(2:Fs/2, 20*log10(X(2:Fs/2)./max(X(2:Fs/2))),'b');
+% semilogx(2:Fs/2, 20*log10(X(2:Fs/2)./max(X(2:Fs/2))),'b');
 % figure(222), plot(X(L/2:end-1)); 
 
 % powyższe przyda się na lab 2
